@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>map_robot_gui</name>
+  <version>0.0.0</version>
+  <description>Map drag-robot GUI for SP Nav tutorial simulation</description>
+  <maintainer email="rm@example.com">rm</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>robot_msg</depend>
+  <depend>tf2_ros</depend>
+  <exec_depend>sp_nav_bringup</exec_depend>
+  <exec_depend>python3-pygame</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-pil</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

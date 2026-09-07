@@ -1,0 +1,12 @@
+# Control topo_jps connector availability.
+#
+# If restore_all is true, the connector_id and enabled fields are ignored and
+# all connectors should be restored to enabled state.
+# Otherwise, the service targets connector_id and applies enabled.
+
+string connector_id
+bool enabled
+bool restore_all
+---
+bool success
+string message

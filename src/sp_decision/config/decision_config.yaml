@@ -1,0 +1,20 @@
+/**:
+  ros__parameters:
+    # 仅保留 click_nav；路径由 decision.launch.py 在启动时解析为包内 share 路径
+    tree_files: []
+
+    bt_plugins:
+      - nav_to_pose_bt_node
+      - condition_judge_bt_node
+      - wait_duration_bt_node
+      - gimbal_control_bt_node
+      - chassis_mode_bt_node
+      - set_double_bt_node
+
+    tick_rate_hz: 10.0
+
+    cout_logger: false
+    file_logger: false
+    zmq_publisher: false
+
+    log_file: "bt_trace.fbl"

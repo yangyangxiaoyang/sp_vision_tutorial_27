@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  click_nav.xml
+  ─────────────
+  响应式点击导航行为树。
+
+  blackboard 变量
+  ───────────────
+    clicked_point_update  (double)       1.0 = 有新目标待处理，0.0 = 无
+    nav_active            (double)       1.0 = 正在导航中，0.0 = 空闲
+    clicked_point         (PoseStamped)  最新目标点（由 BlackboardBridge 写入）
+
+  状态机
+  ──────
+    条件0 (clicked_point_update>0):
+      新目标到来 → 消费标志位 → 标记导航激活
+      若此时正导航，ConditionJudge 会自动 halt NavToPose 再切换 → 实现目标抢占
+    条件1 (nav_active>0):
+      执行导航序列；成功或失败后均清除 nav_active → 回到空闲
+    条件2 (true):
+      空闲，WaitDuration(-1) 永久 RUNNING，等待下一个目标
+-->
+<root BTCPP_format="3"
+      main_tree_to_execute="ClickNavTree">
+  <BehaviorTree ID="ClickNavTree">
+    <ConditionJudge bb_vars="clicked_point_update;nav_active"
+                    conditions="clicked_point_update>0; nav_active>0; true">
+
+      <!-- ── 子节点 0: 新目标到来 ───────────────────────────────────────
+           消费 clicked_point_update 并将 nav_active 置 1。
+           此节点执行极快（两次 SetDouble），立即返回 SUCCESS，
+           ConditionJudge 将在下一 tick 切换到子节点 1 开始导航。
+           若导航中途收到新目标，ConditionJudge 会先 halt 子节点 1
+           （即 halt NavToPose），再执行本节点，实现目标抢占。 -->
+      <Sequence>
+        <SetDouble key="clicked_point_update" value="0.0"/>
+        <SetDouble key="nav_active"           value="1.0"/>
+      </Sequence>
+
+      <!-- ── 子节点 1: 执行导航 ─────────────────────────────────────────
+           ForceSuccess 确保无论导航成功还是失败，最后的
+           SetDouble(nav_active=0) 都能执行，使系统回到空闲状态。 -->
+      <Sequence>
+        <ForceSuccess>
+          <Sequence>
+            <NavToPose goal_pose=""
+                       goal_pose_stamped="{clicked_point}"/>
+            <ChassisMode mode="0"
+                         is_stop="false"
+                         rotate_velocity="2.0"/>
+            <GimbalControl mode="0"
+               big_yaw="0.0"
+               small_yaw="0.0"
+               pitch="0.0"
+               small_yaw_lower_limit="0.0"
+               small_yaw_upper_limit="0.0"
+               pitch_lower_limit="0.0"
+               pitch_upper_limit="0.0"/>
+          </Sequence>
+        </ForceSuccess>
+        <SetDouble key="nav_active" value="0.0"/>
+      </Sequence>
+
+      <!-- ── 子节点 2: 空闲等待 ────────────────────────────────────────
+           duration=-1 永远返回 RUNNING，直到被 ConditionJudge halt。 -->
+      <WaitDuration duration="-1"/>
+
+    </ConditionJudge>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Action ID="ChassisMode">
+      <input_port name="mode" default="0" type="int">运动模式: 0=小陀螺, 1=底盘跟随, 2=变速小陀螺, 3=差速对正, 4=特殊对正, 5=无线充电</input_port>
+      <input_port name="is_stop" default="false" type="bool">是否停止运动 (true=停止)</input_port>
+      <input_port name="rotate_velocity" default="0.0" type="float">旋转速度 (rad/s)</input_port>
+    </Action>
+    <Action ID="GimbalControl">
+      <input_port name="mode" default="0" type="int">运动模式: 0=全向扫描, 1=三轴指定角度, 2=范围扫描, 3=仅yaw锁定, 4=仅大yaw指定角度</input_port>
+      <input_port name="big_yaw" default="0.0" type="float">big_yaw 目标角度 (deg)，mode=1/4 时生效</input_port>
+      <input_port name="small_yaw" default="0.0" type="float">small_yaw 目标角度 (deg)，mode=1 时生效</input_port>
+      <input_port name="pitch" default="0.0" type="float">pitch 目标角度 (deg)，mode=1 时生效</input_port>
+      <input_port name="small_yaw_lower_limit" default="0.0" type="float">small_yaw 范围下限 (deg)，mode=2 时生效</input_port>
+      <input_port name="small_yaw_upper_limit" default="0.0" type="float">small_yaw 范围上限 (deg)，mode=2 时生效</input_port>
+      <input_port name="pitch_lower_limit" default="0.0" type="float">pitch 范围下限 (deg)，mode=2 时生效</input_port>
+      <input_port name="pitch_upper_limit" default="0.0" type="float">pitch 范围上限 (deg)，mode=2 时生效</input_port>
+    </Action>
+    <Action ID="NavToPose">
+      <input_port name="goal_pose" type="std::string">[方式一] 坐标字符串 "(x,y)"</input_port>
+      <input_port name="goal_pose_stamped" type="geometry_msgs::msg::PoseStamped">[方式二] blackboard PoseStamped</input_port>
+    </Action>
+    <Action ID="SetDouble">
+      <input_port name="key" type="std::string">目标 blackboard key</input_port>
+      <input_port name="value" default="0.0" type="double">写入的浮点值</input_port>
+    </Action>
+    <Action ID="WaitDuration">
+      <input_port name="duration" default="0.0" type="float">等待时长 (s)，&lt;0 永久 RUNNING</input_port>
+    </Action>
+    <Control ID="ConditionJudge">
+      <input_port name="bb_vars" type="std::string">分号分隔的 blackboard key 列表</input_port>
+      <input_port name="conditions" type="std::string">分号分隔的 exprtk 表达式，与子节点一一对应</input_port>
+    </Control>
+  </TreeNodesModel>
+
+</root>

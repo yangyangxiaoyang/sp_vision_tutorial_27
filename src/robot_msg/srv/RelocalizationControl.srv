@@ -1,0 +1,5 @@
+# 重定位控制服务
+robot_msg/RelocationCommandMsg command
+---
+bool success
+string message

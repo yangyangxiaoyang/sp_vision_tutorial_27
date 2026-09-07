@@ -1,0 +1,6 @@
+float64 max_vel   # 目标最大速度（m/s），restore=true 时忽略
+float64 max_acc   # 目标最大加速度（m/s²），restore=true 时忽略
+bool    restore   # true = 恢复默认值，false = 使用 max_vel/max_acc
+---
+bool    success
+string  message

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="3"
+      main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <nav_RepeatSequence>
+      <nav_RateControl hz="20">
+        <nav_GetPose parent_frame="map"
+                 child_frame="base_link"
+                 timeout_ms="50"
+                 pose="{start_pose}"/>
+      </nav_RateControl>
+      <nav_RateControl hz="10">
+        <Fallback>
+          <Sequence>
+            <nav_ComputePathService service_name="make_plan"
+                                start="{start_pose}"
+                                goal="{goal_pose}"
+                                path="{global_plan}"/>
+            <nav_SetControlEnable enable="true"
+                              service_name="/set_control_enable"
+                              bb_key="controller_enabled"/>
+          </Sequence>
+          <Sequence>
+            <nav_SetControlEnable enable="false"
+                              service_name="/set_control_enable"
+                              bb_key="controller_enabled"/>
+            <RetryUntilSuccessful num_attempts="100">
+              <Delay delay_msec="100">
+                <nav_ComputePathService service_name="make_plan"
+                                    start="{start_pose}"
+                                    goal="{goal_pose}"
+                                    path="{global_plan}"/>
+              </Delay>
+            </RetryUntilSuccessful>
+            <nav_SetControlEnable enable="true"
+                              service_name="/set_control_enable"
+                              bb_key="controller_enabled"/>
+          </Sequence>
+        </Fallback>
+      </nav_RateControl>
+      <nav_NavStateTrack goal_pose="{goal_pose}"
+                     goal_tolerance="0.3"
+                     remaining_distance="{remaining_distance}"
+                     elapsed_time="{elapsed_time}"/>
+    </nav_RepeatSequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Action ID="nav_ComputePathService">
+      <input_port name="service_name">service_name</input_port>
+      <input_port name="start">Start pose</input_port>
+      <input_port name="goal">Goal pose</input_port>
+      <output_port name="path">Computed path</output_port>
+    </Action>
+    <Action ID="nav_GetPose">
+      <input_port name="parent_frame">Reference (parent) coordinate frame (default: map)</input_port>
+      <input_port name="child_frame">Target (child) coordinate frame (default: base_link)</input_port>
+      <input_port name="timeout_ms">TF wait timeout in milliseconds (default: 100)</input_port>
+      <output_port name="pose">Pose of child_frame expressed in parent_frame (geometry_msgs/PoseStamped)</output_port>
+    </Action>
+    <Action ID="nav_NavStateTrack">
+      <input_port name="goal_pose">Target pose (geometry_msgs/PoseStamped)</input_port>
+      <input_port name="goal_tolerance">Distance threshold to consider goal reached (metres, default: 0.2)</input_port>
+      <output_port name="remaining_distance">Euclidean distance remaining to goal (metres)</output_port>
+      <output_port name="elapsed_time">Time elapsed since task started (seconds)</output_port>
+    </Action>
+    <Decorator ID="nav_RateControl">
+      <input_port name="hz">Rate</input_port>
+    </Decorator>
+    <Control ID="nav_RepeatSequence"/>
+    <Action ID="nav_SetControlEnable">
+      <input_port name="enable">true = enable controller, false = disable controller (publish zero velocity)</input_port>
+      <input_port name="service_name">SetBool service name (default: /set_control_enable)</input_port>
+      <input_port name="bb_key">Blackboard key storing current enable state; nodes sharing the same key skip redundant service calls (default: controller_enabled)</input_port>
+    </Action>
+  </TreeNodesModel>
+
+</root>

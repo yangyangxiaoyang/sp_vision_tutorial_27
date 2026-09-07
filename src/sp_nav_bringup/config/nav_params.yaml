@@ -1,0 +1,23 @@
+planner_server:
+  ros__parameters:
+    costmap_topic: "/global_costmap"
+    path_topic: "/global_path"
+    plugin_name: "AStar"
+    plugin_type: "sp_global_planner/AStarPlanner"
+    AStar:
+      lethal_cost: 100
+      cost_weight: 2.0
+
+esdf_map_publisher:
+  ros__parameters:
+    # map_yaml 由 sp_nav.launch.py 覆盖为包内 maps/rmuc_map.yaml
+    map_yaml: ""
+    frame_id: "map"
+    publish_rate_hz: 1.0
+    unknown_as_obstacle: true
+    robot_radius: 0.25
+    margin: 0.00
+    d_safe: 0.60
+    w: 8.0
+    unknown_cost: 100
+    visualize_esdf: false

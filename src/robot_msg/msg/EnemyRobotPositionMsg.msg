@@ -1,0 +1,13 @@
+# 敌方机器人位置
+int16 hero_x
+int16 hero_y
+int16 engineer_x
+int16 engineer_y
+int16 infantry_3_x
+int16 infantry_3_y
+int16 infantry_4_x
+int16 infantry_4_y
+int16 aerial_x
+int16 aerial_y
+int16 sentry_x
+int16 sentry_y

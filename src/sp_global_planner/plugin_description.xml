@@ -1,0 +1,8 @@
+<library path="sp_global_planner_plugins">
+  <class
+    name="sp_global_planner/AStarPlanner"
+    type="sp_global_planner::AStarPlanner"
+    base_class_type="sp_global_planner::GlobalPlannerPlugin">
+    <description>A* global planner on OccupancyGrid costmap</description>
+  </class>
+</library>

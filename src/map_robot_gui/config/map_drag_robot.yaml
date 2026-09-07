@@ -1,0 +1,44 @@
+map_drag_robot_node:
+  ros__parameters:
+    # map_yaml 由 map_drag_robot.launch.py 覆盖为 sp_nav_bringup 包内地图
+    map_yaml: ""
+
+    topic:      "/robots"
+    frame_id:   "map"
+    odom_topic: "/Odometry"
+    odom_frame_id: "lidar_odom"
+    local_costmap_topic: "/local_costmap/costmap"
+    local_costmap_width_m: 6.0
+    local_costmap_height_m: 6.0
+
+    robot_id:           1
+    init_x:             23.92
+    init_y:             6.80
+    tf_child_frame_id:  "base_link"
+
+    cmd_vel_topic:   "/sentry/cmd_vel"
+    cmd_vel_timeout: 5.0
+    gimbal_topic: "/gimbal/control"
+    scan_speed:   1.0
+    team_robot_hp_topic: "/team_robot_hp"
+
+    robot_ids:          "2,3"
+    init_xs:            "3.00,9.00"
+    init_ys:            "9.70,5.00"
+    tf_child_frame_ids: "base_link_2,base_link_3"
+
+    v_max:        3.0
+    a_max:        3.0
+    robot_radius: 0.25
+
+    publish_hz: 30.0
+    pub_hz:     30.0
+    odom_hz:    30.0
+
+    window_width:  1600
+    window_height: 1000
+
+    treat_unknown_as_occupied: true
+
+    pos_noise_std: 0.1
+    seed:          0

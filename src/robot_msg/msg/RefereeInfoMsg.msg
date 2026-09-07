@@ -1,0 +1,8 @@
+uint8  game_progress
+uint16 stage_remain_time
+uint16 projectile_allowance
+uint16 projectile_allowance_bastion
+float32 target_x
+float32 target_y
+uint8 key
+int16 remaining_energy

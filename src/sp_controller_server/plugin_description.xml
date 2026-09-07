@@ -1,0 +1,10 @@
+<library path="controller_plugins">
+  <class
+    name="PidController"
+    type="pid_controller::PidController"
+    base_class_type="sp_controller_server::ControllerPlugin">
+    <description>
+      A simple PID-based controller plugin for tracking paths.
+    </description>
+  </class>
+</library>

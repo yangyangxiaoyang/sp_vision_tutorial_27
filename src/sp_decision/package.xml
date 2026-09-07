@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sp_decision</name>
+  <version>0.0.0</version>
+  <description>
+    Decision layer with click_nav behavior tree for tutorial.
+  </description>
+  <maintainer email="rm@example.com">rm</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>robot_msg</depend>
+  <depend>sp_msgs</depend>
+  <depend>behaviortree_cpp_v3</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+
+  <build_depend>qtbase5-dev</build_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
